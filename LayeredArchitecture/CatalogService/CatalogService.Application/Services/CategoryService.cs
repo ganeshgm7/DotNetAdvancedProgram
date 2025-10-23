@@ -54,6 +54,6 @@ public class CategoryService(ICategoryRepository categoryRepository) : ICategory
             Id = dto.Id,
             Name = dto.Name,
             ImageUrl = dto.ImageUrl,
-            ParentCategoryId = dto.ParentCategoryId
+            ParentCategoryId = dto.ParentCategoryId == 0 ? null : dto.ParentCategoryId
         };
 }
