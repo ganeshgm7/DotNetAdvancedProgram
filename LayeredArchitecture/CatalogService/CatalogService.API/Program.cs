@@ -1,4 +1,3 @@
-
 using CatalogService.Application.Interfaces;
 using CatalogService.Application.Services;
 using CatalogService.Domain.Interfaces;
@@ -12,19 +11,15 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        var builder = WebApplication.CreateBuilder(args);
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-        // Connection string for SQL Server
-        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-        // Register DbContext
         builder.Services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(connectionString));
 
-        // Register repositories
         builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
         builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
-        // Register services
         builder.Services.AddScoped<ICategoryService, CategoryService>();
         builder.Services.AddScoped<IProductService, ProductService>();
 
@@ -33,18 +28,23 @@ public class Program
         builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
 
-        var app = builder.Build();
+        string xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 
-        // Automatically apply migrations and create the database if it doesn't exist
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.IncludeXmlComments(xmlPath);
+        });
+
+        WebApplication app = builder.Build();
+
         using (IServiceScope scope = app.Services.CreateScope())
         {
             CatalogDbContext db = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
-            db.Database.Migrate(); // This will create the database and apply any pending migrations
+            db.Database.Migrate(); 
         }
 
-        // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();

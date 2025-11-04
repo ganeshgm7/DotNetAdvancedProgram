@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CatalogService.API.Controllers;
 
+/// <summary>
+/// Controller for managing product categories in the catalog.
+/// Provides endpoints to retrieve, create, update, and delete categories.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class CategoriesController(ICategoryService categoryService, IProductService productService) : ControllerBase
@@ -11,11 +15,23 @@ public class CategoriesController(ICategoryService categoryService, IProductServ
     private readonly ICategoryService _categoryService = categoryService;
     private readonly IProductService _productService = productService;
 
+    /// <summary>
+    /// Retrieves a category by its unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the category.</param>
+    /// <returns>
+    /// Returns <see cref="OkObjectResult"/> with the category details and related links if found;
+    /// otherwise, returns <see cref="NotFoundResult"/>.
+    /// </returns>
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
         CategoryDto? category = await _categoryService.GetByIdAsync(id);
-        if (category == null) return NotFound();
+
+        if (category == null)
+        {
+            return NotFound();
+        }
 
         return Ok(new
         {
@@ -30,6 +46,12 @@ public class CategoriesController(ICategoryService categoryService, IProductServ
         });
     }
 
+    /// <summary>
+    /// Retrieves all categories in the catalog.
+    /// </summary>
+    /// <returns>
+    /// Returns <see cref="OkObjectResult"/> containing a list of all categories.
+    /// </returns>
     [HttpGet]
     public async Task<IActionResult> List()
     {
@@ -37,6 +59,13 @@ public class CategoriesController(ICategoryService categoryService, IProductServ
         return Ok(categories);
     }
 
+    /// <summary>
+    /// Creates a new category in the catalog.
+    /// </summary>
+    /// <param name="category">The category data to create.</param>
+    /// <returns>
+    /// Returns <see cref="CreatedAtActionResult"/> with the created category details.
+    /// </returns>
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] CategoryDto category)
     {
@@ -44,6 +73,14 @@ public class CategoriesController(ICategoryService categoryService, IProductServ
         return CreatedAtAction(nameof(Get), new { id = createdCategory.Id }, createdCategory);
     }
 
+    /// <summary>
+    /// Updates an existing category by its unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the category to update.</param>
+    /// <param name="category">The updated category data.</param>
+    /// <returns>
+    /// Returns <see cref="NoContentResult"/> if the update is successful.
+    /// </returns>
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] CategoryDto category)
     {
@@ -53,6 +90,13 @@ public class CategoriesController(ICategoryService categoryService, IProductServ
         return NoContent();
     }
 
+    /// <summary>
+    /// Deletes a category and its associated products by category identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the category to delete.</param>
+    /// <returns>
+    /// Returns <see cref="NoContentResult"/> if the deletion is successful.
+    /// </returns>
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

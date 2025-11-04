@@ -1,33 +1,38 @@
-﻿using Asp.Versioning;
+﻿using Microsoft.AspNetCore.Mvc;
+using Asp.Versioning;
 using CartService.API.BusinessLogic;
 using CartService.API.BusinessLogic.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace CartService.API.Controllers;
 
 /// <summary>
-/// Controller for managing shopping cart operations such as retrieving the cart,
-/// adding items, and removing items.
+/// Controller for managing shopping cart operations in API version 2.0.
+/// Provides endpoints to retrieve cart items, add items, and remove items from a cart.
 /// </summary>
 [ApiController]
-[ApiVersion("1.0")]
+[ApiVersion("2.0")]
 [Route("api/v{version:apiVersion}/cart")]
-public class CartController(CartManager cartManager) : ControllerBase
+public class CartV2Controller(CartManager cartManager) : ControllerBase
 {
     private readonly CartManager _cartManager = cartManager;
 
     /// <summary>
-    /// Retrieves the cart for the specified cart ID.
+    /// Retrieves the items in the specified cart.
     /// </summary>
     /// <param name="cartId">The unique identifier of the cart.</param>
     /// <returns>
-    /// Returns <see cref="OkObjectResult"/> with the cart if found; otherwise, <see cref="NotFoundResult"/>.
+    /// Returns <see cref="OkObjectResult"/> with the cart items if found; otherwise, <see cref="NotFoundResult"/>.
     /// </returns>
     [HttpGet("{cartId}")]
-    public async Task<IActionResult> GetCart(string cartId)
+    public async Task<IActionResult> GetCartItems(string cartId)
     {
         Cart? cart = await _cartManager.GetCartAsync(cartId);
-        return cart == null ? NotFound() : Ok(cart);
+        if (cart == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(cart.Items);
     }
 
     /// <summary>
@@ -60,4 +65,3 @@ public class CartController(CartManager cartManager) : ControllerBase
         return Ok();
     }
 }
-    
