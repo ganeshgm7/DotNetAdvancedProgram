@@ -15,16 +15,25 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         return product == null ? null : MapToDto(product);
     }
 
-    public async Task<IEnumerable<ProductDto>> GetAllAsync()
+    public async Task<IEnumerable<ProductDto>> GetAllAsync(int? categoryId = null, int page = 1, int pageSize = 10)
     {
         IEnumerable<Product> products = await _productRepository.GetAllAsync();
+
+        if (categoryId.HasValue)
+        {
+            products = products.Where(p => p.CategoryId == categoryId.Value);
+        }
+
+        products = products.Skip((page - 1) * pageSize).Take(pageSize);
+
         return products.Select(MapToDto);
     }
 
-    public async Task AddAsync(ProductDto productDto)
+    public async Task<ProductDto> AddAsync(ProductDto productDto)
     {
         Product product = MapToEntity(productDto);
         await _productRepository.AddAsync(product);
+        return MapToDto(product);
     }
 
     public async Task UpdateAsync(ProductDto productDto)
@@ -36,6 +45,11 @@ public class ProductService(IProductRepository productRepository) : IProductServ
     public async Task DeleteAsync(int id)
     {
         await _productRepository.DeleteAsync(id);
+    }
+
+    public async Task DeleteByCategoryIdAsync(int categoryId)
+    {
+        await _productRepository.DeleteByCategoryIdAsync(categoryId);
     }
 
     // Mapping helpers

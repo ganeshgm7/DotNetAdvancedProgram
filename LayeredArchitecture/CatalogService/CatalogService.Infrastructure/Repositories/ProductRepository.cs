@@ -41,4 +41,12 @@ public class ProductRepository(CatalogDbContext context) : IProductRepository
             await _context.SaveChangesAsync();
         }
     }
+
+    public async Task DeleteByCategoryIdAsync(int categoryId)
+    {
+        var products = _context.Products.Where(p => p.CategoryId == categoryId);
+
+        _context.Products.RemoveRange(products);
+        await _context.SaveChangesAsync();
+    }
 }

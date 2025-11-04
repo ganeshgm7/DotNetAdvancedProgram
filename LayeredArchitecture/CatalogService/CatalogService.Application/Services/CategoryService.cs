@@ -21,10 +21,12 @@ public class CategoryService(ICategoryRepository categoryRepository) : ICategory
         return categories.Select(MapToDto);
     }
 
-    public async Task AddAsync(CategoryDto categoryDto)
+    public async Task<CategoryDto> AddAsync(CategoryDto categoryDto) // Changed return type
     {
         Category category = MapToEntity(categoryDto);
         await _categoryRepository.AddAsync(category);
+        // After saving, category.Id will be set
+        return MapToDto(category);
     }
 
     public async Task UpdateAsync(CategoryDto categoryDto)
