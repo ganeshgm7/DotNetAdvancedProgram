@@ -7,4 +7,6 @@ public interface ICartRepository
     Task<Cart?> GetCartAsync(string cartId);
     Task AddItemAsync(string cartId, CartItem item);
     Task RemoveItemAsync(string cartId, int itemId);
+    Task UpdateProductMetadataAsync(int productId, string name, decimal price);
+    Task RemoveProductFromAllCartsAsync(int productId);
 }

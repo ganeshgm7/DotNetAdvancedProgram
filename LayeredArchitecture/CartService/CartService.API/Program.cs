@@ -2,6 +2,7 @@
 using CartService.API.BusinessLogic;
 using CartService.API.BusinessLogic.Interfaces;
 using CartService.API.DataAccess;
+using CartService.API.Messaging;
 using System.Reflection;
 
 namespace CartService.API;
@@ -9,7 +10,7 @@ namespace CartService.API;
 public class Program
 {
     public static void Main(string[] args)
-    {
+    {   
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddSingleton<ICartRepository>(sp => new CartRepository("cart.db"));
@@ -42,6 +43,10 @@ public class Program
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddRouting(options => options.LowercaseUrls = true);
+
+        builder.Services.AddHostedService<ProductEventListener>();
+
+        builder.Services.Configure<ServiceBusSubscriptionSettings>(builder.Configuration.GetSection("ServiceBus"));
 
         WebApplication app = builder.Build();
 
