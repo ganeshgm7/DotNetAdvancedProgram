@@ -2,7 +2,6 @@ using CatalogService.Application.Interfaces;
 using CatalogService.Application.Services;
 using CatalogService.Domain.Interfaces;
 using CatalogService.Infrastructure.Data;
-using CatalogService.Infrastructure.Messaging;
 using CatalogService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +14,7 @@ public class Program
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
         string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
         builder.Services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(connectionString));
 
         builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
@@ -23,11 +23,10 @@ public class Program
         builder.Services.AddScoped<ICategoryService, CategoryService>();
         builder.Services.AddScoped<IProductService, ProductService>();
 
-        builder.Services.Configure<ServiceBusPublisherSettings>(builder.Configuration.GetSection("ServiceBus"));
-        builder.Services.AddSingleton<IProductEventPublisher, ServiceBusProductEventPublisher>();
-
         builder.Services.AddControllers();
+
         builder.Services.AddRouting(options => options.LowercaseUrls = true);
+
         builder.Services.AddEndpointsApiExplorer();
 
         string xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -43,7 +42,7 @@ public class Program
         using (IServiceScope scope = app.Services.CreateScope())
         {
             CatalogDbContext db = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
-            db.Database.Migrate();
+            db.Database.Migrate(); 
         }
 
         if (app.Environment.IsDevelopment())
@@ -53,8 +52,12 @@ public class Program
         }
 
         app.UseHttpsRedirection();
+
         app.UseAuthorization();
+
+
         app.MapControllers();
+
         app.Run();
     }
 }
