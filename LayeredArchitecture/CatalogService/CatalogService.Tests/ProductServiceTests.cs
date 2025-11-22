@@ -1,4 +1,5 @@
 ﻿using CatalogService.Application.DTOs;
+using CatalogService.Application.Interfaces;
 using CatalogService.Application.Services;
 using CatalogService.Domain.Entities;
 using CatalogService.Domain.Interfaces;
@@ -13,9 +14,10 @@ public class ProductServiceTests
     {
         // Arrange
         Mock<IProductRepository> mockRepo = new();
+        Mock<IProductEventPublisher> mockEventPublisher = new();
         Product product = new() { Id = 1, Name = "Phone", CategoryId = 1, Price = 100, Amount = 5 };
         mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(product);
-        ProductService service = new(mockRepo.Object);
+        ProductService service = new(mockRepo.Object, mockEventPublisher.Object);
 
         // Act
         ProductDto? result = await service.GetByIdAsync(1);

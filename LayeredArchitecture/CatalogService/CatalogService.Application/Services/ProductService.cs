@@ -1,13 +1,16 @@
 ﻿using CatalogService.Application.DTOs;
+using CatalogService.Application.Events;
 using CatalogService.Application.Interfaces;
 using CatalogService.Domain.Entities;
 using CatalogService.Domain.Interfaces;
 
 namespace CatalogService.Application.Services;
 
-public class ProductService(IProductRepository productRepository) : IProductService
+public class ProductService(IProductRepository productRepository,
+                            IProductEventPublisher eventPublisher) : IProductService
 {
     private readonly IProductRepository _productRepository = productRepository;
+    private readonly IProductEventPublisher _eventPublisher = eventPublisher;
 
     public async Task<ProductDto?> GetByIdAsync(int id)
     {
@@ -33,6 +36,7 @@ public class ProductService(IProductRepository productRepository) : IProductServ
     {
         Product product = MapToEntity(productDto);
         await _productRepository.AddAsync(product);
+        await PublishMutationAsync(product, isDeleted: false);
         return MapToDto(product);
     }
 
@@ -40,11 +44,17 @@ public class ProductService(IProductRepository productRepository) : IProductServ
     {
         Product product = MapToEntity(productDto);
         await _productRepository.UpdateAsync(product);
+        await PublishMutationAsync(product, isDeleted: false);
     }
 
     public async Task DeleteAsync(int id)
     {
+        Product? existing = await _productRepository.GetByIdAsync(id);
+        if (existing is null)
+            return;
+
         await _productRepository.DeleteAsync(id);
+        await PublishMutationAsync(existing, isDeleted: true);
     }
 
     public async Task DeleteByCategoryIdAsync(int categoryId)
@@ -52,7 +62,23 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         await _productRepository.DeleteByCategoryIdAsync(categoryId);
     }
 
-    // Mapping helpers
+    private async Task PublishMutationAsync(Product product, bool isDeleted)
+    {
+        ProductUpdatedEvent evt = 
+            new
+            (
+                EventId: Guid.NewGuid(),
+                OccurredUtc: DateTime.UtcNow,
+                ProductId: product.Id,
+                Name: product.Name,
+                Price: product.Price,
+                CategoryId: product.CategoryId,
+                IsDeleted: isDeleted
+            );
+
+        await _eventPublisher.PublishAsync(evt);
+    }
+
     private ProductDto MapToDto(Product product) =>
         new()
         {
