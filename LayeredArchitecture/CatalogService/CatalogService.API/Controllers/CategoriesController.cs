@@ -1,5 +1,7 @@
-﻿using CatalogService.Application.DTOs;
+﻿using CatalogService.API.Authorization;
+using CatalogService.Application.DTOs;
 using CatalogService.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CatalogService.API.Controllers;
@@ -10,6 +12,7 @@ namespace CatalogService.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class CategoriesController(ICategoryService categoryService, IProductService productService) : ControllerBase
 {
     private readonly ICategoryService _categoryService = categoryService;
@@ -17,6 +20,7 @@ public class CategoriesController(ICategoryService categoryService, IProductServ
 
     /// <summary>
     /// Retrieves a category by its unique identifier.
+    /// All authenticated users can access this endpoint.
     /// </summary>
     /// <param name="id">The unique identifier of the category.</param>
     /// <returns>
@@ -24,6 +28,7 @@ public class CategoriesController(ICategoryService categoryService, IProductServ
     /// otherwise, returns <see cref="NotFoundResult"/>.
     /// </returns>
     [HttpGet("{id}")]
+    // No policy restriction - all authenticated users can read
     public async Task<IActionResult> Get(int id)
     {
         CategoryDto? category = await _categoryService.GetByIdAsync(id);
@@ -48,11 +53,13 @@ public class CategoriesController(ICategoryService categoryService, IProductServ
 
     /// <summary>
     /// Retrieves all categories in the catalog.
+    /// All authenticated users can access this endpoint.
     /// </summary>
     /// <returns>
     /// Returns <see cref="OkObjectResult"/> containing a list of all categories.
     /// </returns>
     [HttpGet]
+    // No policy restriction - all authenticated users can read
     public async Task<IActionResult> List()
     {
         IEnumerable<CategoryDto> categories = await _categoryService.GetAllAsync();
@@ -61,12 +68,14 @@ public class CategoriesController(ICategoryService categoryService, IProductServ
 
     /// <summary>
     /// Creates a new category in the catalog.
+    /// Only accessible by users with Manager role.
     /// </summary>
     /// <param name="category">The category data to create.</param>
     /// <returns>
     /// Returns <see cref="CreatedAtActionResult"/> with the created category details.
     /// </returns>
     [HttpPost]
+    [Authorize(Policy = Policies.CanCreate)]
     public async Task<IActionResult> Add([FromBody] CategoryDto category)
     {
         CategoryDto createdCategory = await _categoryService.AddAsync(category);
@@ -75,6 +84,7 @@ public class CategoriesController(ICategoryService categoryService, IProductServ
 
     /// <summary>
     /// Updates an existing category by its unique identifier.
+    /// Only accessible by users with Manager role.
     /// </summary>
     /// <param name="id">The unique identifier of the category to update.</param>
     /// <param name="category">The updated category data.</param>
@@ -82,6 +92,7 @@ public class CategoriesController(ICategoryService categoryService, IProductServ
     /// Returns <see cref="NoContentResult"/> if the update is successful.
     /// </returns>
     [HttpPut("{id}")]
+    [Authorize(Policy = Policies.CanUpdate)]
     public async Task<IActionResult> Update(int id, [FromBody] CategoryDto category)
     {
         category.Id = id;
@@ -92,12 +103,14 @@ public class CategoriesController(ICategoryService categoryService, IProductServ
 
     /// <summary>
     /// Deletes a category and its associated products by category identifier.
+    /// Only accessible by users with Manager role.
     /// </summary>
     /// <param name="id">The unique identifier of the category to delete.</param>
     /// <returns>
     /// Returns <see cref="NoContentResult"/> if the deletion is successful.
     /// </returns>
     [HttpDelete("{id}")]
+    [Authorize(Policy = Policies.CanDelete)]
     public async Task<IActionResult> Delete(int id)
     {
         await _productService.DeleteByCategoryIdAsync(id);

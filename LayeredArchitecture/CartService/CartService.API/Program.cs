@@ -1,20 +1,46 @@
-
 using CartService.API.BusinessLogic;
 using CartService.API.BusinessLogic.Interfaces;
 using CartService.API.DataAccess;
 using CartService.API.Messaging;
+using CartService.API.Middleware;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
+using System.Text;
 
 namespace CartService.API;
 
 public class Program
 {
     public static void Main(string[] args)
-    {   
+    {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddSingleton<ICartRepository>(sp => new CartRepository("cart.db"));
         builder.Services.AddScoped<CartManager>();
+
+        // Configure JWT Bearer authentication (same configuration as CatalogService)
+        var jwtSecret = builder.Configuration["JwtSettings:Secret"];
+        var jwtIssuer = builder.Configuration["JwtSettings:Issuer"];
+        var jwtAudience = builder.Configuration["JwtSettings:Audience"];
+
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtIssuer,
+                    ValidAudience = jwtAudience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret!)),
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+
+        builder.Services.AddAuthorization();
 
         builder.Services.AddControllers();
 
@@ -61,6 +87,11 @@ public class Program
         }
 
         app.UseHttpsRedirection();
+
+        // Add custom middleware to log token details
+        app.UseMiddleware<TokenLoggingMiddleware>();
+
+        app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
         app.Run();

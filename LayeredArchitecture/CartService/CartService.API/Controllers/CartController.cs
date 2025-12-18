@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using CartService.API.BusinessLogic;
 using CartService.API.BusinessLogic.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CartService.API.Controllers;
@@ -8,16 +9,19 @@ namespace CartService.API.Controllers;
 /// <summary>
 /// Controller for managing shopping cart operations such as retrieving the cart,
 /// adding items, and removing items.
+/// Accessible to both Manager and StoreCustomer roles.
 /// </summary>
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/cart")]
+[Authorize] // All endpoints require authentication
 public class CartController(CartManager cartManager) : ControllerBase
 {
     private readonly CartManager _cartManager = cartManager;
 
     /// <summary>
     /// Retrieves the cart for the specified cart ID.
+    /// Accessible to all authenticated users (Manager and StoreCustomer).
     /// </summary>
     /// <param name="cartId">The unique identifier of the cart.</param>
     /// <returns>
@@ -32,6 +36,7 @@ public class CartController(CartManager cartManager) : ControllerBase
 
     /// <summary>
     /// Adds an item to the specified cart.
+    /// Accessible to all authenticated users (Manager and StoreCustomer).
     /// </summary>
     /// <param name="cartId">The unique identifier of the cart.</param>
     /// <param name="item">The item to add to the cart.</param>
@@ -47,6 +52,7 @@ public class CartController(CartManager cartManager) : ControllerBase
 
     /// <summary>
     /// Removes an item from the specified cart.
+    /// Accessible to all authenticated users (Manager and StoreCustomer).
     /// </summary>
     /// <param name="cartId">The unique identifier of the cart.</param>
     /// <param name="itemId">The unique identifier of the item to remove.</param>
@@ -60,4 +66,3 @@ public class CartController(CartManager cartManager) : ControllerBase
         return Ok();
     }
 }
-    

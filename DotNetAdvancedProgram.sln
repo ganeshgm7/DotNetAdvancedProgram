@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36511.14 d17.14
+# Visual Studio Version 18
+VisualStudioVersion = 18.1.11304.174 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LayeredArchitecture", "LayeredArchitecture", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
@@ -22,6 +22,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatalogService.Infrastructure", "LayeredArchitecture\CatalogService\CatalogService.Infrastructure\CatalogService.Infrastructure.csproj", "{0EF04534-EF77-4829-8440-9920DCED2749}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatalogService.Tests", "LayeredArchitecture\CatalogService\CatalogService.Tests\CatalogService.Tests.csproj", "{EAD6CE20-315C-4B8A-9325-5FDAD45EEB2D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IdentityService", "IdentityService", "{8F7652A7-543E-475D-8972-A364B13100CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityService.API", "LayeredArchitecture\IdentityService\IdentityService.API\IdentityService.API.csproj", "{9F3BDDD1-F451-A1A2-EE66-4B866F6B9947}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityService.Tests", "LayeredArchitecture\IdentityService\IdentityService.Tests\IdentityService.Tests.csproj", "{8AFC4E04-CEDB-81EF-84B7-687DBCBA881F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +63,14 @@ Global
 		{EAD6CE20-315C-4B8A-9325-5FDAD45EEB2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EAD6CE20-315C-4B8A-9325-5FDAD45EEB2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EAD6CE20-315C-4B8A-9325-5FDAD45EEB2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F3BDDD1-F451-A1A2-EE66-4B866F6B9947}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F3BDDD1-F451-A1A2-EE66-4B866F6B9947}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F3BDDD1-F451-A1A2-EE66-4B866F6B9947}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F3BDDD1-F451-A1A2-EE66-4B866F6B9947}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AFC4E04-CEDB-81EF-84B7-687DBCBA881F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AFC4E04-CEDB-81EF-84B7-687DBCBA881F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AFC4E04-CEDB-81EF-84B7-687DBCBA881F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AFC4E04-CEDB-81EF-84B7-687DBCBA881F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -71,6 +85,9 @@ Global
 		{D08B171C-A256-4A3C-A884-0D4402EF0229} = {833B000F-804F-4164-A665-5E881584B90B}
 		{0EF04534-EF77-4829-8440-9920DCED2749} = {833B000F-804F-4164-A665-5E881584B90B}
 		{EAD6CE20-315C-4B8A-9325-5FDAD45EEB2D} = {833B000F-804F-4164-A665-5E881584B90B}
+		{8F7652A7-543E-475D-8972-A364B13100CC} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{9F3BDDD1-F451-A1A2-EE66-4B866F6B9947} = {8F7652A7-543E-475D-8972-A364B13100CC}
+		{8AFC4E04-CEDB-81EF-84B7-687DBCBA881F} = {8F7652A7-543E-475D-8972-A364B13100CC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {48BDCAD7-FC0A-4A80-AEC7-1B48AD867BC1}
