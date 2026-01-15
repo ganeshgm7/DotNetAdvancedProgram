@@ -149,7 +149,7 @@ public class AuthController : ControllerBase
         }
         catch (NotImplementedException ex)
         {
-            _logger.LogWarning("Refresh token not implemented - client should use Azure AD MSAL");
+            _logger.LogWarning(ex, "Refresh token not implemented - client should use Azure AD MSAL");
             return StatusCode(501, new
             {
                 message = ex.Message,

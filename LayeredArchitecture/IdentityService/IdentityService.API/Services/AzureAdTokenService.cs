@@ -246,7 +246,7 @@ public class AzureAdTokenService : ITokenService
             };
 
             JwtSecurityTokenHandler handler = new();
-            ClaimsPrincipal principal = handler.ValidateToken(token, validationParameters, out var validatedToken);
+            ClaimsPrincipal principal = handler.ValidateToken(token, validationParameters, out _);
 
             string? username = principal.FindFirst(ClaimTypes.Name)?.Value;
             IEnumerable<string> roles = principal.FindAll("roles").Select(c => c.Value);
@@ -282,7 +282,7 @@ public class AzureAdTokenService : ITokenService
         return Task.CompletedTask;
     }
 
-    private GraphServiceClient CreateGraphClient(string accessToken)
+    private static GraphServiceClient CreateGraphClient(string accessToken)
     {
         TokenCredential credential = new AccessTokenCredential(accessToken);
         return new GraphServiceClient(credential);
@@ -359,7 +359,7 @@ public class AzureAdTokenService : ITokenService
     }
 
     // Helper class for token credential
-    private class AccessTokenCredential(string accessToken) : TokenCredential
+    private sealed class AccessTokenCredential(string accessToken) : TokenCredential
     {
         private readonly string _accessToken = accessToken;
 
